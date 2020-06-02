@@ -1,0 +1,165 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.gui;
+
+import com.codename1.components.InteractionDialog;
+import com.codename1.io.Preferences;
+import com.codename1.io.Util;
+import com.codename1.ui.Button;
+import static com.codename1.ui.CN.callSerially;
+import static com.codename1.ui.CN.convertToPixels;
+import static com.codename1.ui.CN.execute;
+import static com.codename1.ui.CN.getCurrentForm;
+import static com.codename1.ui.CN.startThread;
+import static com.codename1.ui.Component.CENTER;
+import com.codename1.ui.Dialog;
+import com.codename1.ui.Font;
+import com.codename1.ui.FontImage;
+import com.codename1.ui.Form;
+import com.codename1.ui.Image;
+import com.codename1.ui.Slider;
+import com.codename1.ui.geom.Dimension;
+import com.codename1.ui.layouts.BorderLayout;
+import com.codename1.ui.layouts.FlowLayout;
+import com.codename1.ui.layouts.GridLayout;
+import com.codename1.ui.plaf.Border;
+import com.codename1.ui.plaf.Style;
+import static java.lang.System.getProperty;
+
+/**
+ *
+ * @author Mahdi
+ */
+public class haha {
+    
+    private static haha instance;
+    private boolean running;
+    
+    private int timeForPrompt;
+    
+    private String appstoreUrl;
+    
+    
+    public haha() {        
+    }
+
+    private void init(String appstoreUrl) {
+        this.appstoreUrl = appstoreUrl;
+        
+        running = true;
+        Thread t = startThread(() -> checkTimerThread(), "Review thread");
+        t.start();
+    }
+    
+    void checkTimerThread() {
+        while(running) {
+            long lastTime = System.currentTimeMillis();
+            int timeEllapsedInApp = Preferences.get("timeElapsedInApp", 0);
+            Util.wait(this, timeForPrompt - timeEllapsedInApp);
+            long total = System.currentTimeMillis() - lastTime;
+            if(total + timeEllapsedInApp < timeForPrompt) {
+                Preferences.set("timeElapsedInApp", (int)(total + timeEllapsedInApp));
+            } else {
+                callSerially(() -> showReviewWidget());
+                running = false;
+                instance  = null;
+                return;
+            }
+        }
+    }
+    
+    public void showReviewWidget() {
+        // block this from happening twice
+        Preferences.set("alreadyRated", true);
+//        InteractionDialog id = new InteractionDialog("Please Rate "  + getProperty("Debou"));
+  InteractionDialog id = new InteractionDialog("Please Rate " );
+        Form f = getCurrentForm();
+        id.setLayout(new BorderLayout());
+        Slider rate = createStarRankSlider();
+        Button ok = new Button("OK");
+        Button no = new Button("Non Merci");
+        id.add(CENTER, FlowLayout.encloseCenterMiddle(rate)).
+                add(BorderLayout.SOUTH, GridLayout.encloseIn(2, no, ok));
+        int height = id.getPreferredH();
+        id.show(f.getHeight()  - height - f.getTitleArea().getHeight(), 0, 0, 0);
+        no.addActionListener(e -> id.dispose());
+        ok.addActionListener(e -> {
+            id.dispose();
+            if(rate.getProgress() >= 9) {
+                if(Dialog.show("Rate Us", "Pourriez-vous nous évaluer dans l'App Store?", "Go To Store", "Anuuler")) {
+                    execute(appstoreUrl);
+                }
+            } 
+            else 
+                System.out.println("D'accord");
+        });
+    }
+
+    private void initStarRankStyle(Style s, Image star) {
+        s.setBackgroundType(Style.BACKGROUND_IMAGE_TILE_BOTH);
+        s.setBorder(Border.createEmpty());
+        s.setBgImage(star);
+        s.setBgTransparency(0);
+    }
+
+    private Slider createStarRankSlider() {
+        Font fnt = Font.createTrueTypeFont("native:MainLight", "native:MainLight").
+                derive(convertToPixels(5, true), Font.STYLE_PLAIN);
+        Style s = new Style(0xffff33, 0, fnt, (byte)0);
+        Image fullStar = FontImage.createMaterial(FontImage.MATERIAL_STAR, s).toImage();
+        s.setOpacity(100);
+        s.setFgColor(0);
+        Image emptyStar = FontImage.createMaterial(FontImage.MATERIAL_STAR, s).toImage();
+        Slider starRank = new Slider() {
+            public void refreshTheme(boolean merge) {
+                // special case when changing the theme while the dialog is showing
+                initStarRankStyle(getSliderEmptySelectedStyle(), emptyStar);
+                initStarRankStyle(getSliderEmptyUnselectedStyle(), emptyStar);
+                initStarRankStyle(getSliderFullSelectedStyle(), fullStar);
+                initStarRankStyle(getSliderFullUnselectedStyle(), fullStar);
+            }
+        };
+        starRank.setEditable(true);
+        starRank.setMinValue(0);
+        starRank.setMaxValue(10);
+        initStarRankStyle(starRank.getSliderEmptySelectedStyle(), emptyStar);
+        initStarRankStyle(starRank.getSliderEmptyUnselectedStyle(), emptyStar);
+        initStarRankStyle(starRank.getSliderFullSelectedStyle(), fullStar);
+        initStarRankStyle(starRank.getSliderFullUnselectedStyle(), fullStar);
+        starRank.setPreferredSize(new Dimension(fullStar.getWidth() * 5, fullStar.getHeight()));
+        return starRank;
+    }    
+    
+    /**
+     * Binds the rating widget to the UI if the app wasn't rated yet
+     * 
+     * @param time time in milliseconds for the widget to appear
+     * @param appstoreUrl the app URL in the store
+     */
+    public static void bindRatingListener(int time, String appstoreUrl) {
+        if(Preferences.get("alreadyRated", false)) {
+            return;
+        }
+        instance = new haha();
+        instance.timeForPrompt = time;
+        
+    }
+    
+    /**
+     * This should be invoked by the stop() method as we don't want rating countdown to proceed when the app isn't
+     * running
+     */
+    public static void suspendRating() {
+        if(instance != null) {
+            synchronized(instance) {
+                instance.notify();
+            }
+            instance.running  = false;
+            instance = null;
+        }
+    }
+    
+}
