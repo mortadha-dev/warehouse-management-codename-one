@@ -73,7 +73,7 @@ public class AffichageCommande extends SideMenuBaseForm  {
          Button btnSupp = new Button("Refuser");
          Button btnupdate = new Button("Accepter");         
          lb=new TextArea("");
- lb.setText( "\nlibelle de la commande :"+a.getLibellecommade()+ "\nQuantité commandée :"+ a.getQuantitecommande()+"\nNom du produit "+a.getDescription());
+ lb.setText( "\nlibelle de la commande :"+a.getLibellecommade()+"\nNom du produit "+a.getLibelle()+ "\nQuantité commandée :"+ a.getQuantitecommande());
     
  Container content = BoxLayout.encloseY(
         lb,t2
@@ -84,7 +84,7 @@ public class AffichageCommande extends SideMenuBaseForm  {
  );
             y.add(content);
             y.add(haha);
-            
+             a.setPrixUnitaire((t2.getText()));
          btnSupp.addActionListener((ActionListener) (ActionEvent evt1) -> {
          System.out.println(a.getId());
          serviceTask.refusCommande(a);
@@ -97,10 +97,12 @@ public class AffichageCommande extends SideMenuBaseForm  {
          });
            btnupdate.addActionListener((ActionListener) (ActionEvent evt1) -> {
            String p = t2.getText();
-           a.setPrixUnitaire("20");
+          
+               System.out.println(p);
+               System.out.println(a);
            new ServiceCommande().accepteCommande(a);
        
-         AffichageCommande f5;
+                AffichageCommande f5;
            
                 f5 = new AffichageCommande(res);
 

@@ -19,17 +19,18 @@ public class Commande {
     String etat , nomfournisseur;
     int produit_id ;
     String description;
+    String libelle;
     public Commande() {
     }
     
-    public Commande( int id ,String libellecommade, String descriptioncomande, int quantitecommande, String prixUnitaire, int prixTotal,String description) {
+    public Commande( int id ,String libellecommade, String descriptioncomande, int quantitecommande, String prixUnitaire, int prixTotal,String libelle) {
         this.id = id;
         this.libellecommade = libellecommade;
         this.descriptioncomande = descriptioncomande;
         this.quantitecommande = quantitecommande;
         this.prixUnitaire = prixUnitaire;
         this.prixTotal = prixTotal;
-        this.description=description;
+        this.libelle=libelle;
         
     }
      public Commande(int prixTotal) {
@@ -118,9 +119,13 @@ public class Commande {
         this.description = description;
     }
 
-  
+    public String getLibelle() {
+        return libelle;
+    }
 
-    
+    public void setLibelle(String libelle) {
+        this.libelle = libelle;
+    }
     
     
     

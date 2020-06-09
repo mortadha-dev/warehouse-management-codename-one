@@ -69,7 +69,9 @@ public abstract class SideMenuBaseForm extends Form {
         getToolbar().addMaterialCommandToSideMenu("  Service D'ACHAT ", FontImage.MATERIAL_SHOPPING_CART,  e -> new MortadhaForm(res).show());
         getToolbar().addMaterialCommandToSideMenu("  Service LIVRAISON", FontImage.MATERIAL_LOCAL_SHIPPING,  e -> new MarwenForm(res).show());
         getToolbar().addMaterialCommandToSideMenu("  Profil ", FontImage.MATERIAL_EVENT_NOTE,  e -> new TayssirForm(res).show());  
-        getToolbar().addMaterialCommandToSideMenu("  Service Aprés-vente ", FontImage.MATERIAL_EVENT_NOTE,  e -> new ProfilForm().show());      
+        getToolbar().addMaterialCommandToSideMenu("  Service Aprés-vente ", FontImage.MATERIAL_EVENT_NOTE,  e -> new ProfilForm().show());
+        getToolbar().addMaterialCommandToSideMenu("  Reclamation ", FontImage.MATERIAL_EVENT_NOTE,  e -> new ReclamationForm(res).show());  
+        getToolbar().addMaterialCommandToSideMenu("  Rendez-Vous ", FontImage.MATERIAL_EVENT_NOTE,  e -> new RendezVourForm(res).show());  
         getToolbar().addMaterialCommandToSideMenu("  Se déconnecter", FontImage.MATERIAL_EXIT_TO_APP,  e -> new LoginForm(res).show());
 
 

@@ -5,7 +5,6 @@
  */
 package com.esprit.myapp;
 
-
 import com.esprit.Entities.Conge;
 import com.esprit.Entities.Employe;
 import com.esprit.Entities.User;
@@ -15,7 +14,9 @@ import com.esprit.Entities.User;
  * @author Emna
  */
 public class Session {
-    public static boolean cnx=false;
+
+    public static String API_URL = "http://localhost/pi/web/app_dev.php/mobile";
+    public static boolean cnx = false;
     private static Employe employe;
     private static Conge conge;
 //    private static Fablab fablab;
@@ -52,7 +53,5 @@ public class Session {
     public static void setConge(Conge conge) {
         Session.conge = conge;
     }
-    
-    
-    
+
 }

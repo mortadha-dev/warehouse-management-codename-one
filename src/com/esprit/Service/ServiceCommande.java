@@ -95,7 +95,7 @@ public class ServiceCommande {
                  rs.setLibellecommade(obj.get("libellecommande").toString());
                  
                  rs.setDescriptioncomande(obj.get("descriptioncommande").toString());
-                  rs.setDescription(obj.get("description").toString());
+                 rs.setLibelle(obj.get("libelle").toString());
                 
                 float quantitecommande = Float.parseFloat(obj.get("quantitecommande").toString());
                 rs.setQuantitecommande((int) quantitecommande);
